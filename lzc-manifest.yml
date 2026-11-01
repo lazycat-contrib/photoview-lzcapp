@@ -1,0 +1,45 @@
+application:
+  subdomain: photoview
+  multi_instance: false
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://photoview:80/
+
+services:
+  photoview:
+    # upstream: viktorstrate/photoview:2.4.0
+    image: docker.1ms.run/viktorstrate/photoview:2.4.0
+    environment:
+      - PHOTOVIEW_LISTEN_IP=0.0.0.0
+      - PHOTOVIEW_LISTEN_PORT=80
+      - PHOTOVIEW_DATABASE_DRIVER=sqlite
+      - PHOTOVIEW_SQLITE_PATH=/data/photoview.db
+      - PHOTOVIEW_MEDIA_CACHE=/data/media-cache
+      - PHOTOVIEW_SERVE_UI=1
+    # The image creates photoview with uid/gid 999, so run_as maps the
+    # persistent directory owner to that identity. run_as is mutually exclusive
+    # with a service-level setup_script, hence ownership is declared here.
+    run_as: "999:999"
+    binds:
+      - /lzcapp/var/data:/data
+      - /lzcapp/var/photos:/photos
+
+usage: |
+  Photoview 是自托管相册：扫描你放照片的目录，按相册和时间线浏览，支持分享链接与人脸分组。
+
+  使用方法：
+  1. 打开应用，首次进入会要求创建管理员账号（本应用自己的账号）。
+  2. 进入设置，添加一个照片目录（本包预置了 /photos 作为照片根目录）。
+  3. 触发扫描后即可在相册里浏览；相册按目录或手动方式组织。
+
+  数据与安全：
+  - 数据库（SQLite）和缩略图缓存保存在 /lzcapp/var/data，照片本身放在 /lzcapp/var/photos，两者卸载应用时都会一并删除，请提前备份。
+  - 本包不预置账号或默认密码，首个管理员由你本人首次访问时创建。
+  - 应用经懒猫入口鉴权访问，未开放无需登录的接口路径。
+
+  说明：
+  - 照片需要你自己放进 /lzcapp/var/photos 对应目录（可通过文件管理或共享方式），本包不代管导入。
+  - 人脸识别依赖运行时的模型文件，首次使用相关功能可能需要额外下载，本包未预置模型。
+  - 未做真机验证：首次建号、目录扫描、缩略图生成、时间线浏览、分享链接以及重启后持久化均未在设备上实测。

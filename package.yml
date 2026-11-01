@@ -1,0 +1,18 @@
+package: community.lazycat.app.photoview
+version: 2.4.0
+name: Photoview
+description: "Photo gallery for your own folders, with albums, faces and sharing."
+min_os_version: "1.6.0"
+homepage: https://github.com/photoview/photoview
+author: photoview
+license: AGPL-3.0
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: Photoview
+    description: "自托管相册：扫描你自己的照片目录，按相册、时间线浏览并分享。"
+  en:
+    name: Photoview
+    description: "Photo gallery for your own folders, with albums, faces and sharing."
